@@ -1,0 +1,49 @@
+import requests
+
+# Set the API endpoints for the accounting app and CRM
+accounting_api_url = "https://accounting-app-api.com/api/"
+crm_api_url = "https://crm-api.com/api/"
+
+# Replace these with your actual API keys or authentication tokens
+accounting_api_key = "your_accounting_api_key"
+crm_api_token = "your_crm_api_token"
+
+# Example data to be transferred from accounting app to CRM
+invoice_data = {
+    "invoice_number": "INV123",
+    "amount": 1000.00,
+    "customer_id": "123",
+}
+
+# Connect to the accounting app API and fetch data
+accounting_response = requests.post(
+    f"{accounting_api_url}/invoices",
+    headers={"Authorization": f"Bearer {accounting_api_key}"},
+    json=invoice_data,
+)
+
+if accounting_response.status_code == 200:
+    print("Invoice created successfully in the accounting app.")
+else:
+    print(f"Error creating invoice. Status code: {accounting_response.status_code}")
+
+# Extract relevant data from the accounting app response
+accounting_invoice_id = accounting_response.json().get("invoice_id")
+
+# Connect to the CRM API and update customer record with accounting data
+crm_customer_data = {
+    "crm_field1": "value1",
+    "crm_field2": "value2",
+    "accounting_invoice_id": accounting_invoice_id,
+}
+
+crm_response = requests.put(
+    f"{crm_api_url}/customers/{invoice_data['customer_id']}",
+    headers={"Authorization": f"Bearer {crm_api_token}"},
+    json=crm_customer_data,
+)
+
+if crm_response.status_code == 200:
+    print("Customer record updated in the CRM.")
+else:
+    print(f"Error updating customer record. Status code: {crm_response.status_code}")
